@@ -1,0 +1,17 @@
+[project]
+name = "VIP"
+version = "0.1.0"
+description = "VIP Recognition service"
+readme = "README.md"
+requires-python = ">=3.12,<4.0"
+dependencies = [
+    "aiohttp>=3.13.2",
+    "aiortc>=1.14.0",
+    "opencv-python>=4.12.0.88",
+    "websockets>=15.0.1",
+]
+
+[tool.setuptools.packages.find]
+where = ["."]
+include = ["app", "util", "config", "component"]
+exclude = ["static", "templates"]
