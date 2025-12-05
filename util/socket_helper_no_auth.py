@@ -3,7 +3,9 @@ import json
 import ssl
 import websockets
 
-WS_URL = "wss://backend.vap:8094/vap-face-alerts-v3"
+# WS_URL = "wss://backend.vap:8094/vap-face-alerts-v3"
+WS_URL = "wss://0.0.0.0:8094"
+
 
 # ----------------------------------------------------------
 # Create SSL context that ignores certificate verification
@@ -23,6 +25,8 @@ def process_fr_alert(data):
     """
     Extract useful fields from FR alert message.
     """
+
+    print(data)
 
     useful = {
         "idEventVap": data.get("idEventVap"),
@@ -51,11 +55,11 @@ async def listen_fr_alerts():
             print(f"Connecting to {WS_URL} ...")
 
             async with websockets.connect(
-                WS_URL,
-                ssl=ssl_context,
-                ping_interval=20,
-                ping_timeout=20,
-                max_size=10 * 1024 * 1024
+                    WS_URL,
+                    ssl=ssl_context,
+                    ping_interval=20,
+                    ping_timeout=20,
+                    max_size=10 * 1024 * 1024
             ) as ws:
 
                 print("✅ Connected! Listening for FR alerts...\n")
@@ -75,8 +79,5 @@ async def listen_fr_alerts():
             await asyncio.sleep(5)
 
 
-# ----------------------------------------------------------
-# Entry point
-# ----------------------------------------------------------
 if __name__ == "__main__":
     asyncio.run(listen_fr_alerts())
