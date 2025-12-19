@@ -3,8 +3,18 @@ import zmq
 import time
 import numpy as np
 from loguru import logger
+import threading
 
 from util.face_helper import FaceRec
+from util.g1_helper import G1
+
+
+def greet(robot, name):
+    if name == 'UNKNOWN':
+        robot.say("Hello, welcome to the airshow!")
+    else:
+        robot.say(f"Hello, {name}, welcome to the airshow!")
+    robot.wave_hand()
 
 
 class ImageClient:
@@ -48,7 +58,9 @@ class ImageClient:
     def receive_process(self):
         self.launch_zmq_subscriber()
         face_rec = FaceRec()
+        robot = G1()
         last_rec_time = 0.0
+        unknown_cnt = 0
 
         while self.running:
             message = self.socket.recv()
@@ -66,7 +78,19 @@ class ImageClient:
             if current_time - last_rec_time >= 1.0:
                 left_img, name = face_rec.recognize(left_img)
                 last_rec_time = current_time
-                last_name = name
+                if name is not None and robot.state == 'idle':
+                    if name == "UNKNOWN":
+                        unknown_cnt += 1
+                        if unknown_cnt < 3:
+                            continue
+
+                    threading.Thread(
+                        target=greet,
+                        args=(robot, name),
+                        daemon=True
+                    ).start()
+
+                    unknown_cnt = 0
 
                 # display
                 if self.image_show:
@@ -75,8 +99,6 @@ class ImageClient:
                         self.running = False
             else:
                 pass
-
-
 
 
 if __name__ == "__main__":
