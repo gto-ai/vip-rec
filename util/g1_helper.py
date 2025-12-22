@@ -1,10 +1,13 @@
 import time
 from enum import IntEnum
+from pathlib import Path
 
+from config import BASE
 from unitree_sdk2py.core.channel import ChannelSubscriber, ChannelFactoryInitialize
 from unitree_sdk2py.g1.audio.g1_audio_client import AudioClient
 from unitree_sdk2py.g1.arm.g1_arm_action_client import G1ArmActionClient
 from unitree_sdk2py.g1.arm.g1_arm_action_client import action_map
+from util.wav import read_wav, play_pcm_stream
 
 
 class Language(IntEnum):
@@ -34,6 +37,23 @@ class G1:
         language = kwargs.get('language', Language.English)
         self.audio_client.TtsMaker(text, language)
 
+    def play_wav(self, wav_path):
+        pcm_bytes, sample_rate, num_channels, is_ok = read_wav(wav_path)
+
+        if not is_ok or sample_rate != 16000 or num_channels != 1:
+            print("[ERROR] Failed to read WAV file or unsupported format (must be 16kHz mono)")
+            return
+
+        # play
+        play_pcm_stream(self.audio_client, pcm_bytes, "example")
+
+        # wait until playback finishes
+        duration_sec = len(pcm_bytes) / (16000 * 2)  # mono int16
+        time.sleep(duration_sec + 0.1)
+
+        # now it is safe to stop
+        self.audio_client.PlayStop("example")
+
     def wave_hand(self):
         self.state = 'busy'
         self.arm_client.ExecuteAction(action_map.get("high wave"))
@@ -54,6 +74,7 @@ class G1:
 
 if __name__ == "__main__":
     robot = G1()
-    robot.say('hello, nice to meet you in the airshow')
+    # robot.say('hello, nice to meet you in the airshow')
     # robot.wave_hand()
-    robot.heart()
+    robot.play_wav(str(Path(BASE, 'cache', 'tts-2025-12-22_eb69e38a_16k.wav')))
+    # robot.heart()
