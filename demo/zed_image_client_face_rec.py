@@ -11,9 +11,11 @@ from util.g1_helper import G1
 
 def greet(robot, name):
     if name == 'UNKNOWN':
-        robot.say("Hello, welcome to the airshow!")
+        wav_path = robot.gen_wave('Hello, welcome to the airshow!')
+        robot.play_wav(wav_path)
     else:
-        robot.say(f"Hello, {name}, welcome to the airshow!")
+        wav_path = robot.gen_wave(f"Hello, {name}, welcome to the airshow!")
+        robot.play_wav(wav_path)
     robot.wave_hand()
 
 

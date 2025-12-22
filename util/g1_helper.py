@@ -1,6 +1,7 @@
 import time
 from enum import IntEnum
 from pathlib import Path
+import asyncio
 
 from config import BASE
 from unitree_sdk2py.core.channel import ChannelSubscriber, ChannelFactoryInitialize
@@ -8,6 +9,7 @@ from unitree_sdk2py.g1.audio.g1_audio_client import AudioClient
 from unitree_sdk2py.g1.arm.g1_arm_action_client import G1ArmActionClient
 from unitree_sdk2py.g1.arm.g1_arm_action_client import action_map
 from util.wav import read_wav, play_pcm_stream
+from util.edgetts_helper import EdgeTTS
 
 
 class Language(IntEnum):
@@ -26,9 +28,13 @@ class G1:
 
         self.audio_client.SetVolume(90)
 
+        self.tts = EdgeTTS()
+
         self.arm_client = G1ArmActionClient()
         self.arm_client.SetTimeout(10.0)
         self.arm_client.Init()
+
+
 
         self.state = 'idle'
 
@@ -54,6 +60,10 @@ class G1:
         # now it is safe to stop
         self.audio_client.PlayStop("example")
 
+    def gen_wave(self, text):
+        wav_path = asyncio.run(self.tts.speak(text))
+        return wav_path
+
     def wave_hand(self):
         self.state = 'busy'
         self.arm_client.ExecuteAction(action_map.get("high wave"))
@@ -72,9 +82,25 @@ class G1:
         self.state = 'idle'
 
 
+def greet(robot, name):
+    if name == 'UNKNOWN':
+        wav_path = robot.gen_wave('Hello, welcome to the airshow!')
+        robot.play_wav(wav_path)
+    else:
+        wav_path = robot.gen_wave(f"Hello, {name}, welcome to the airshow!")
+        robot.play_wav(wav_path)
+    robot.wave_hand()
+
+
 if __name__ == "__main__":
     robot = G1()
     # robot.say('hello, nice to meet you in the airshow')
     # robot.wave_hand()
-    robot.play_wav(str(Path(BASE, 'cache', 'tts-2025-12-22_eb69e38a_16k.wav')))
+
+
+    # wav_path = robot.gen_wave('Hi Ruofei, nice to meet you')
+    # robot.play_wav(wav_path)
+
+    greet(robot, "Karthe")
+
     # robot.heart()
