@@ -65,6 +65,33 @@ class EdgeTTS:
 
         return tmp16k
 
+    async def convert(self, text, audio_path, **kwargs):
+        extension = kwargs.get('extension', '.wav')
+        file_name = kwargs.get('file_name', None)
+        if file_name is None:
+            tmpfile = Path(self.output_folder, f"tts-{datetime.now().date()}_{uuid.uuid4().hex[:8]}{extension}")
+        else:
+            tmpfile = Path(self.output_folder, f"tts-{file_name}{extension}")
+
+        communicate = edge_tts.Communicate(text, voice=self.voice)
+        await communicate.save(str(tmpfile))
+
+        tmp16k = Path(audio_path)
+
+        subprocess.run(
+            [
+                "ffmpeg", "-y",
+                "-i", str(tmpfile),
+                "-ar", "16000",
+                "-ac", "1",
+                "-c:a", "pcm_s16le",
+                str(tmp16k)
+            ],
+            check=True,
+        )
+
+        return tmp16k
+
 
 async def demo_all_voices():
     tts = EdgeTTS()

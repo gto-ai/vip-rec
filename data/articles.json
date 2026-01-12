@@ -1,0 +1,38 @@
+{
+  "article_1": [
+    {
+      "action": "wave_hand",
+      "audio": "/home/rfouyang/workspace/services/vip-rec/data/article_1/article_1_000.wav"
+    },
+    {
+      "action": "conversational_gesture",
+      "audio": "/home/rfouyang/workspace/services/vip-rec/data/article_1/article_1_001.wav"
+    },
+    {
+      "action": "heart",
+      "audio": "/home/rfouyang/workspace/services/vip-rec/data/article_1/article_1_002.wav"
+    },
+    {
+      "action": "conversational_gesture",
+      "audio": "/home/rfouyang/workspace/services/vip-rec/data/article_1/article_1_003.wav"
+    }
+  ],
+  "article_2": [
+    {
+      "action": "wave_hand",
+      "audio": "/home/rfouyang/workspace/services/vip-rec/data/article_2/article_2_000.wav"
+    },
+    {
+      "action": "turn_right",
+      "audio": "/home/rfouyang/workspace/services/vip-rec/data/article_2/article_2_001.wav"
+    },
+    {
+      "action": "",
+      "audio": "/home/rfouyang/workspace/services/vip-rec/data/article_2/article_2_002.wav"
+    },
+    {
+      "action": "",
+      "audio": "/home/rfouyang/workspace/services/vip-rec/data/article_2/article_2_003.wav"
+    }
+  ]
+}

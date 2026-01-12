@@ -75,6 +75,6 @@ class ImageClient:
 if __name__ == "__main__":
     client = ImageClient(
         image_show=True,
-        server_address="127.0.0.1",
+        server_address="192.168.123.164",
     )
     client.receive_process()

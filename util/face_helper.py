@@ -66,8 +66,6 @@ class FaceRec:
         return frame
 
     def recognize(self, frame):
-        frame = self.center_crop(frame, ratio=0.6)
-
         results = DeepFace.find(
             img_path=frame,
             db_path=self.db_path,

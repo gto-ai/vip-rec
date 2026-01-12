@@ -1,0 +1,4 @@
+[action:wave_hand] I am Alice, born in unitree and now work in ST engineering. Today, I am so glad to show you some of our recent work in embodied AI. 
+[action:conversational_gesture] Please check on my right side. My robot colleague Sky is picking up toy cherry and place into the basket. He has practiced a few hundreds of times to make the move smooth. Let us give him some plause.
+[action:heart] You may want to know how he is able to do it. It is all thanks to our data factory and model training pipeline in embodied AI. My other colleages are helping Sky to collect data by teleoperate him to do so. Then the collected data are used to train his brain. With a smarter brain, Sky can do more and more interesting things.
+[action:conversational_gesture] Thank you for your listening. We also have robot dogs in the next door. You may also want to take a look. Bye.
