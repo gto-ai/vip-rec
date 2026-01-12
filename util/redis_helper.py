@@ -5,9 +5,10 @@ class Redis:
     conn = None
 
     @classmethod
-    def connect(cls):
+    def connect(cls, **kwargs):
         if cls.conn is None:
-            cls.conn = redis.Redis(host='192.168.123.123', port=6379, db=0)
+            ip = kwargs.get('ip', '127.0.0.1')
+            cls.conn = redis.Redis(host=ip, port=6379, db=0)
 
     @classmethod
     def flush_all(cls):

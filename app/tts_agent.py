@@ -10,13 +10,15 @@ from config import BASE
 
 
 class TTSAgent:
-    def __init__(self):
+    def __init__(self, **kwargs):
         self.g1_audio = G1Audio()
+        self.audio_ip = kwargs.get('audio_ip', "127.0.0.1")
+        self.action_ip = kwargs.get('action_ip', "127.0.0.1")
 
         ctx = zmq.Context.instance()
         self.audio_sub = ctx.socket(zmq.SUB)
         self.audio_sub.setsockopt(zmq.CONFLATE, 1)
-        self.audio_sub.connect("tcp://127.0.0.1:5556")
+        self.audio_sub.connect(f"tcp://{self.audio_ip}:5556")
         self.audio_sub.setsockopt_string(zmq.SUBSCRIBE, "")
         self.audio_sub.setsockopt(zmq.RCVTIMEO, 1000)
 
@@ -26,7 +28,7 @@ class TTSAgent:
         Redis.set('audio_status', 'idle')
 
         self.action_pub = ctx.socket(zmq.PUB)
-        self.action_pub.bind("tcp://127.0.0.1:5557")
+        self.action_pub.bind(f"tcp://{self.action_ip}:5557")
 
     def read_article(self, article_id):
         Redis.set('audio_status', 'busy')

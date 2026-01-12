@@ -25,7 +25,7 @@ class G1Action:
         self.state = 'idle'
 
         self.username = IPHelper.get_username()
-        self.python_bin = f"/home/{self.username}/anaconda3/envs/vip/bin/python"
+        self.python_bin = str(Path(sys.executable).parent)
 
     def wave_hand(self):
         self.state = 'busy'

@@ -12,11 +12,12 @@ from config import BASE
 class ActionAgent:
     def __init__(self):
         self.robot = G1Action()
+        self.action_ip = kwargs.get('action_ip', "127.0.0.1")
 
         ctx = zmq.Context.instance()
         self.action_sub = ctx.socket(zmq.SUB)
         self.action_sub.setsockopt(zmq.CONFLATE, 1)
-        self.action_sub.connect("tcp://127.0.0.1:5557")
+        self.action_sub.connect(f"tcp://{self.action_ip}:5557")
         self.action_sub.setsockopt_string(zmq.SUBSCRIBE, "")
         self.action_sub.setsockopt(zmq.RCVTIMEO, 1000)
 

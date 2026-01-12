@@ -70,16 +70,16 @@ class CameraAgent:
     def __init__(self, **kwargs):
         self.running = True
         self.image_show = kwargs.get('image_show', False)
-        self.server_address = kwargs.get('server_address', "192.168.123.164")
-        self.port = kwargs.get('port', 5555)
+        self.camera_ip = kwargs.get('camera_ip', "192.168.123.164")
 
         self.context = zmq.Context()
         self.camera_sub = self.context.socket(zmq.SUB)
-        self.camera_sub.connect(f"tcp://{self.server_address}:{self.port}")
+        self.camera_sub.connect(f"tcp://{self.camera_ip}:5555")
         self.camera_sub.setsockopt_string(zmq.SUBSCRIBE, "")
 
+        self.audio_ip = kwargs.get('camera_ip', "127.0.0.1")
         self.audio_pub = self.context.socket(zmq.PUB)
-        self.audio_pub.bind("tcp://127.0.0.1:5556")
+        self.audio_pub.bind(f"tcp://{self.audio_ip}:5556")
 
     def get_stereo_images(self, frame):
         h, w = frame.shape[:2]
