@@ -1,7 +1,7 @@
 import time
 import subprocess
 from pathlib import Path
-
+import sys
 from config import BASE
 from unitree_sdk2py.core.channel import ChannelSubscriber, ChannelFactoryInitialize
 from unitree_sdk2py.g1.audio.g1_audio_client import AudioClient
