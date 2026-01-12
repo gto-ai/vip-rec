@@ -10,7 +10,7 @@ from config import BASE
 
 
 class ActionAgent:
-    def __init__(self):
+    def __init__(self, **kwargs):
         self.robot = G1Action()
         self.action_ip = kwargs.get('action_ip', "127.0.0.1")
 
