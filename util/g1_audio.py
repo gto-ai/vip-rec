@@ -48,7 +48,7 @@ class G1Audio:
         play_pcm_stream(self.audio_client, pcm_bytes, "example")
 
         # wait until playback finishes
-        duration_sec = len(pcm_bytes) / (16000 * 2)  # mono int16
+        duration_sec = len(pcm_bytes) / (16000*3)  # mono int16
         time.sleep(duration_sec + 0.1)
 
         # now it is safe to stop
@@ -68,5 +68,5 @@ class G1Audio:
 
 
 if __name__ == "__main__":
-    robot = G1()
-    greet(robot, "Karthee")
+    robot = G1Audio()
+    robot.play_wav('/home/rfouyang/workspace/services/vip-rec/data/article_1/article_1_000.wav')
