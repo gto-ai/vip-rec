@@ -24,17 +24,30 @@ class ActionAgent:
         Redis.set('action_status', 'idle')
 
     def execute_action(self, action_name):
-        Redis.set('action_status', 'busy')
         logger.info(action_name)
+
+        Redis.set('action_status', 'busy')
 
         if action_name == 'wave_hand':
             self.robot.wave_hand()
         elif action_name == 'heart':
             self.robot.heart()
-        elif action_name == 'conversational_gesture':
-            self.robot.conversational_gesture()
+        elif action_name == 'conversation_gesture':
+            self.robot.conversation_gesture()
+        elif action_name == 'neutral_gesture':
+            self.robot.neutral_gesture()
+        elif action_name == 'open_gesture':
+            self.robot.open_gesture()
+        elif action_name == "clap":
+            self.robot.clap()
+        elif action_name == "high_five":
+            self.robot.high_five()
+        elif action_name == "right_hand_up":
+            self.robot.right_hand_up()
+        elif action_name == "hands_up":
+            self.robot.hands_up()
         else:
-            pass
+            raise Exception(f"Action name: {action_name} not defined.")
 
         Redis.set('action_status', 'idle')
 

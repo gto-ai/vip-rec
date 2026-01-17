@@ -1,17 +1,12 @@
 import time
-import sys
 import threading
 from enum import Enum
 
-from unitree_sdk2py.core.channel import ChannelPublisher, ChannelSubscriber, ChannelFactoryInitialize
+from unitree_sdk2py.core.channel import ChannelPublisher, ChannelSubscriber
 from unitree_sdk2py.idl.default import unitree_hg_msg_dds__LowCmd_
-from unitree_sdk2py.idl.default import unitree_hg_msg_dds__LowState_
 from unitree_sdk2py.idl.unitree_hg.msg.dds_ import LowCmd_, LowState_
 from unitree_sdk2py.utils.crc import CRC
 from unitree_sdk2py.utils.thread import RecurrentThread
-from unitree_sdk2py.comm.motion_switcher.motion_switcher_client import MotionSwitcherClient
-
-from util.ip_helper import IPHelper
 
 import numpy as np
 
@@ -76,16 +71,16 @@ class ArmState(Enum):
 
 
 class ConversationGesture:
-    def __init__(self):
+    def __init__(self, duration=2.0, hold_duration=2.0):
         self.control_time_ = 0.0
         self.state_time_ = 0.0
         self.control_dt_ = 0.02
-        self.duration_ = 2.0
-        self.hold_duration_ = 2.0
-        self.kp = 30.
+        self.duration_ = duration
+        self.hold_duration_ = hold_duration
+        self.kp = 30.0
         self.kd = 1.5
-        self.dq = 0.
-        self.tau_ff = 0.
+        self.dq = 0.0
+        self.tau_ff = 0.0
         self.mode_machine_ = 0
         self.low_cmd = unitree_hg_msg_dds__LowCmd_()
         self.low_state = None
@@ -99,40 +94,61 @@ class ConversationGesture:
         self.target_pos = None
         self.start_pos = None
 
+        # Joint positions for gestures
         self.initial_pos = [
             0.18, 0.2, 0.23, 1.15, 0.3, 0., 0.2,
             0.18, -0.2, -0.23, 1.15, -0.3, 0., -0.2,
             0, 0, 0
         ]
         self.left_gesture = [
-            0., 0., 1.17, -0.19, -kPi_2, 0., 0.,
-            0.18, -0.2, -0.23, 1.15, -0.3, 0., -0.2,
-            0.5, 0, 0
+            0.0, 0.0, 1.17, -0.19, -kPi_2, 0.0, 0.0,
+            0.18, -0.2, -0.23, 1.15, -0.3, 0.0, -0.2,
+            0, 0, 0
         ]
         self.right_gesture = [
-            0.18, 0.2, 0.23, 1.15, 0.3, 0., 0.2,
-            0., 0., -1.17, -0.19, kPi_2, 0., 0.,
-            -0.5, 0, 0
+            0.18, 0.2, 0.23, 1.15, 0.3, 0.0, 0.2,
+            0.0, 0.0, -1.17, -0.19, kPi_2, 0.0, 0.0,
+            0, 0, 0
+        ]
+
+        self.neutral_gesture_pos = [
+            0.0, 0.7, -(kPi_2 / 2), -0.15, -(kPi_2 / 4), 0.0, 0.0,
+            0.0, -0.7, (kPi_2 / 2), -0.15, (kPi_2 / 4), 0.0, 0.0,
+            0, 0, 0
+        ]
+
+        self.open_gesture_pos = [
+            0.0, 0.5, 0.8, -0.19, -(kPi_2 / 2), 0.0, 0.0,
+            0.0, -0.5, -0.8, -0.19, (kPi_2 / 2), 0.0, 0.0,
+            0, 0, 0,
         ]
 
         self.arm_joints = [
-            G1JointIndex.LeftShoulderPitch, G1JointIndex.LeftShoulderRoll,
-            G1JointIndex.LeftShoulderYaw, G1JointIndex.LeftElbow,
-            G1JointIndex.LeftWristRoll, G1JointIndex.LeftWristPitch,
+            G1JointIndex.LeftShoulderPitch,
+            G1JointIndex.LeftShoulderRoll,
+            G1JointIndex.LeftShoulderYaw,
+            G1JointIndex.LeftElbow,
+            G1JointIndex.LeftWristRoll,
+            G1JointIndex.LeftWristPitch,
             G1JointIndex.LeftWristYaw,
-            G1JointIndex.RightShoulderPitch, G1JointIndex.RightShoulderRoll,
-            G1JointIndex.RightShoulderYaw, G1JointIndex.RightElbow,
-            G1JointIndex.RightWristRoll, G1JointIndex.RightWristPitch,
+            G1JointIndex.RightShoulderPitch,
+            G1JointIndex.RightShoulderRoll,
+            G1JointIndex.RightShoulderYaw,
+            G1JointIndex.RightElbow,
+            G1JointIndex.RightWristRoll,
+            G1JointIndex.RightWristPitch,
             G1JointIndex.RightWristYaw,
             G1JointIndex.WaistYaw,
             G1JointIndex.WaistRoll,
-            G1JointIndex.WaistPitch
+            G1JointIndex.WaistPitch,
         ]
 
     def Init(self):
         # create publisher #
-        self.arm_sdk_publisher = ChannelPublisher("rt/arm_sdk", LowCmd_)
-        # self.arm_sdk_publisher = ChannelPublisher("rt/lowcmd", LowCmd_)
+        self.arm_sdk_publisher = ChannelPublisher(
+            "rt/arm_sdk", LowCmd_
+        )  # Robot Control
+        # self.arm_sdk_publisher = ChannelPublisher("rt/lowcmd", LowCmd_) # Mujoco Sim
         self.arm_sdk_publisher.Init()
 
         # create subscriber #
@@ -197,7 +213,9 @@ class ConversationGesture:
 
     def release_arm_sdk(self):
         # Release arm sdk control
-        self.low_cmd.motor_cmd[G1JointIndex.kNotUsedJoint].q = 0  # 1:Enable arm_sdk, 0:Disable arm_sdk
+        self.low_cmd.motor_cmd[G1JointIndex.kNotUsedJoint].q = (
+            0  # 1:Enable arm_sdk, 0:Disable arm_sdk
+        )
         for joint in self.arm_joints:
             self.low_cmd.motor_cmd[joint].kp = 0
             self.low_cmd.motor_cmd[joint].kd = 0
@@ -216,15 +234,21 @@ class ConversationGesture:
         self.update_state_machine()
 
         # Execute the target posture if in corresponding state
-        self.low_cmd.motor_cmd[G1JointIndex.kNotUsedJoint].q = 1  # 1:Enable arm_sdk, 0:Disable arm_sdk
+        self.low_cmd.motor_cmd[G1JointIndex.kNotUsedJoint].q = (
+            1  # 1:Enable arm_sdk, 0:Disable arm_sdk
+        )
         for i, joint in enumerate(self.arm_joints):
-            self.low_cmd.motor_cmd[joint].tau = 0.
+            self.low_cmd.motor_cmd[joint].tau = 0.0
             if self.state == ArmState.HOLD_GESTURE:
                 self.low_cmd.motor_cmd[joint].q = self.target_pos[i]
             else:
-                self.low_cmd.motor_cmd[joint].q = self.interpolate_joint_pos(self.start_pos[joint], self.target_pos[i],
-                                                                             self.state_time_, self.duration_)
-            self.low_cmd.motor_cmd[joint].dq = 0.
+                self.low_cmd.motor_cmd[joint].q = self.interpolate_joint_pos(
+                    self.start_pos[joint],
+                    self.target_pos[i],
+                    self.state_time_,
+                    self.duration_,
+                )
+            self.low_cmd.motor_cmd[joint].dq = 0.0
             self.low_cmd.motor_cmd[joint].kp = self.kp
             self.low_cmd.motor_cmd[joint].kd = self.kd
 
@@ -234,32 +258,34 @@ class ConversationGesture:
     def conversation_gesture(self, direction):  # direction: 'left' or 'right'
         print("Performing conversation gesture to the", direction)
 
-        if direction == 'left':
+        if direction == "left":
             self.target_pos = self.left_gesture
-        elif direction == 'right':
+        elif direction == "right":
             self.target_pos = self.right_gesture
         self.Init()
         self.Start()
-
-        # while True:
-        #     time.sleep(1)
-        #     if self.done:
-        #        print("Done!")
-        #        sys.exit(-1)
 
         while not self.done:
             time.sleep(0.1)
         print("Done!")
         return
 
+    def neutral_gesture(self):
+        self.target_pos = self.neutral_gesture_pos
+        self.Init()
+        self.Start()
 
-def main():
-    network_interface = IPHelper.get_network_interface('192.168.123.*')
-    ChannelFactoryInitialize(0, network_interface)
+        while not self.done:
+            time.sleep(0.1)
+        print("Done!")
+        return
 
-    custom_action = ConversationGesture()
-    custom_action.conversation_gesture('left')
+    def open_gesture(self):
+        self.target_pos = self.open_gesture_pos
+        self.Init()
+        self.Start()
 
-
-if __name__ == '__main__':
-    main()
+        while not self.done:
+            time.sleep(0.1)
+        print("Done!")
+        return

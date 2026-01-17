@@ -10,7 +10,7 @@ from unitree_sdk2py.g1.arm.g1_arm_action_client import action_map
 from util.wav import read_wav, play_pcm_stream
 from util.edgetts_helper import EdgeTTS
 from util.ip_helper import IPHelper
-
+from loguru import logger
 
 
 class G1Action:
@@ -25,11 +25,10 @@ class G1Action:
         self.state = 'idle'
 
         self.username = IPHelper.get_username()
-        self.python_bin = '/home/rfouyang/anaconda3/envs/vip/bin/python'
 
     def wave_hand(self):
         self.state = 'busy'
-        self.arm_client.ExecuteAction(action_map.get("high wave"))
+        self.arm_client.ExecuteAction(action_map.get("face wave"))
         self.state = 'idle'
 
     def heart(self):
@@ -39,14 +38,50 @@ class G1Action:
         self.arm_client.ExecuteAction(action_map.get("release arm"))
         self.state = 'idle'
 
-    def release_arm(self):
+    def clap(self):
         self.state = 'busy'
+        self.arm_client.ExecuteAction(action_map.get("clap"))
+        self.state = 'idle'
+
+    def high_five(self):
+        self.state = 'busy'
+        self.arm_client.ExecuteAction(action_map.get("high five"))
+        time.sleep(0.5)
         self.arm_client.ExecuteAction(action_map.get("release arm"))
         self.state = 'idle'
 
-    def conversational_gesture(self):
-        script = str(Path(BASE, 'util', 'action', 'conversational_gesture.py'))
-        subprocess.run([self.python_bin, script], check=True)
+    def right_hand_up(self):
+        self.state = 'busy'
+        self.arm_client.ExecuteAction(action_map.get("right hand up"))
+        time.sleep(2)
+        self.arm_client.ExecuteAction(action_map.get("release arm"))
+        self.state = 'idle'
+
+    def hands_up(self):
+        self.state = 'busy'
+        self.arm_client.ExecuteAction(action_map.get("hands up"))
+        time.sleep(1)
+        self.arm_client.ExecuteAction(action_map.get("release arm"))
+        self.state = 'idle'
+
+    def conversation_gesture(self):
+        self.state = 'busy'
+        script = str(Path(BASE, 'util', 'action', 'run_conversation_gesture.py'))
+        subprocess.run([sys.executable, script], check=True)
+        self.state = 'idle'
+
+    def neutral_gesture(self):
+        self.state = 'busy'
+        script = str(Path(BASE, 'util', 'action', 'run_neutral_gesture.py'))
+        subprocess.run([sys.executable, script], check=True)
+        self.state = 'idle'
+
+    def open_gesture(self):
+        self.state = 'busy'
+        script = str(Path(BASE, 'util', 'action', 'run_open_gesture.py'))
+        subprocess.run([sys.executable, script], check=True)
+        self.state = 'idle'
+
 
 
 def main():

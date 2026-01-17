@@ -1,20 +1,62 @@
 {
   "article_1": [
     {
-      "action": "wave_hand",
+      "action": "high_five",
       "audio": "/home/rfouyang/workspace/services/vip-rec/data/article_1/article_1_000.wav"
     },
     {
-      "action": "conversational_gesture",
+      "action": "right_hand_up",
       "audio": "/home/rfouyang/workspace/services/vip-rec/data/article_1/article_1_001.wav"
     },
     {
-      "action": "heart",
+      "action": "conversation_gesture",
       "audio": "/home/rfouyang/workspace/services/vip-rec/data/article_1/article_1_002.wav"
     },
     {
-      "action": "conversational_gesture",
+      "action": "clap",
       "audio": "/home/rfouyang/workspace/services/vip-rec/data/article_1/article_1_003.wav"
+    },
+    {
+      "action": "hands_up",
+      "audio": "/home/rfouyang/workspace/services/vip-rec/data/article_1/article_1_004.wav"
+    },
+    {
+      "action": "open_gesture",
+      "audio": "/home/rfouyang/workspace/services/vip-rec/data/article_1/article_1_005.wav"
+    },
+    {
+      "action": "neutral_gesture",
+      "audio": "/home/rfouyang/workspace/services/vip-rec/data/article_1/article_1_006.wav"
+    },
+    {
+      "action": "conversation_gesture",
+      "audio": "/home/rfouyang/workspace/services/vip-rec/data/article_1/article_1_007.wav"
+    },
+    {
+      "action": "wave_hand",
+      "audio": "/home/rfouyang/workspace/services/vip-rec/data/article_1/article_1_008.wav"
+    }
+  ],
+  "article_4": [
+    {
+      "action": "high_five",
+      "audio": "/home/rfouyang/workspace/services/vip-rec/data/article_4/article_4_000.wav"
+    },
+    {
+      "action": "open_gesture",
+      "audio": "/home/rfouyang/workspace/services/vip-rec/data/article_4/article_4_001.wav"
+    },
+    {
+      "action": "conversation_gesture",
+      "audio": "/home/rfouyang/workspace/services/vip-rec/data/article_4/article_4_002.wav"
+    },
+    {
+      "action": "clap",
+      "audio": "/home/rfouyang/workspace/services/vip-rec/data/article_4/article_4_003.wav"
+    },
+    {
+      "action": "wave_hand",
+      "audio": "/home/rfouyang/workspace/services/vip-rec/data/article_4/article_4_004.wav"
     }
   ],
   "article_2": [
@@ -33,6 +75,32 @@
     {
       "action": "",
       "audio": "/home/rfouyang/workspace/services/vip-rec/data/article_2/article_2_003.wav"
+    }
+  ],
+  "article_3": [
+    {
+      "action": "high_five",
+      "audio": "/home/rfouyang/workspace/services/vip-rec/data/article_3/article_3_000.wav"
+    },
+    {
+      "action": "right_hand_up",
+      "audio": "/home/rfouyang/workspace/services/vip-rec/data/article_3/article_3_001.wav"
+    },
+    {
+      "action": "conversation_gesture",
+      "audio": "/home/rfouyang/workspace/services/vip-rec/data/article_3/article_3_002.wav"
+    },
+    {
+      "action": "clap",
+      "audio": "/home/rfouyang/workspace/services/vip-rec/data/article_3/article_3_003.wav"
+    },
+    {
+      "action": "open_gesture",
+      "audio": "/home/rfouyang/workspace/services/vip-rec/data/article_3/article_3_004.wav"
+    },
+    {
+      "action": "wave_hand",
+      "audio": "/home/rfouyang/workspace/services/vip-rec/data/article_3/article_3_005.wav"
     }
   ]
 }

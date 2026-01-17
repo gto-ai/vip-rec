@@ -1,6 +1,7 @@
 import redis
 import json
 
+
 class Redis:
     conn = None
 
@@ -35,13 +36,12 @@ class Redis:
             return None
 
 
-
-
 def main():
-    Redis.set("key", {"key1": "value1", "key2": "value2"})
+    # Redis.set("key", {"key1": "value1", "key2": "value2"})
     Redis.flush_db()
-    res = Redis.get("key")
-    print(res)
+    # res = Redis.get("key")
+    # print(res)
+
 
 if __name__ == "__main__":
     main()

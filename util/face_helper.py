@@ -74,7 +74,10 @@ class FaceRec:
             enforce_detection=False
         )
 
-        if len(results) > 0 and len(results[0])>0:  # detected
+        logger.info(results)
+
+        if len(results) > 0 and len(results[0]) > 0:  # detected
+
             logger.debug(f"Detected no. of faces: {len(results)}")
             print(results)
 
@@ -89,12 +92,14 @@ class FaceRec:
                 name = 'UNKNOWN'
             else:  # detected and face in DB
                 identity = Path(row['identity']).stem
+
                 name = identity
                 name = re.sub(r"\s*\d+$", "", name)
 
+                logger.info(f"Identity: {identity} {name}")
+
             frame = self.draw_face(frame, row, name)
 
-            logger.info(f"Identity: {name}")
             logger.info(f"Confidence: {row['confidence']}, Distance: {row['distance']}")
 
             return frame, name

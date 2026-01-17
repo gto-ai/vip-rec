@@ -22,6 +22,12 @@ class TTSAgent:
         self.audio_sub.setsockopt_string(zmq.SUBSCRIBE, "")
         self.audio_sub.setsockopt(zmq.RCVTIMEO, 1000)
 
+        self.audio_sub2 = ctx.socket(zmq.SUB)
+        self.audio_sub2.setsockopt(zmq.CONFLATE, 1)
+        self.audio_sub2.connect(f"tcp://{self.audio_ip}:5558")
+        self.audio_sub2.setsockopt_string(zmq.SUBSCRIBE, "")
+        self.audio_sub2.setsockopt(zmq.RCVTIMEO, 1000)
+
         with Path(BASE, 'data', 'articles.json').open() as f:
             self.dict_info = json.loads(f.read())
 
@@ -31,7 +37,7 @@ class TTSAgent:
         self.action_pub.bind(f"tcp://{self.action_ip}:5557")
 
     def read_article(self, article_id):
-        Redis.set('audio_status', 'busy')
+
         for line in self.dict_info[article_id]:
             action = line['action']
             audio_path = line['audio']
@@ -45,45 +51,63 @@ class TTSAgent:
 
             self.g1_audio.play_wav(audio_path)
             logger.info(audio_path)
+
+    def handle_message(self, msg):
+        data = json.loads(msg)
+
+        Redis.set('audio_status', 'busy')
+
+        if 'article' in data:
+            vip_info = Redis.get('vip')
+            if vip_info is None or vip_info['status'] == 'off':
+                name = data['name']
+                Redis.set('name', name)
+                self.g1_audio.greet(name)
+                logger.info(name)
+                Redis.set('name', "")
+
+                article_id = data['article']
+                # self.read_article(article_id)
+            else:
+                if 'name' in vip_info:
+                    name = vip_info['name']
+                    Redis.set('name', name)
+                    self.g1_audio.greet(name)
+                    logger.warning(name)
+
+                    article_id = data['article']
+                    # self.read_article(article_id)
+                    Redis.set('name', "")
+
         Redis.set('audio_status', 'idle')
 
     def run(self):
         logger.info('TTS agent is running.')
+
+        poller = zmq.Poller()
+        poller.register(self.audio_sub, zmq.POLLIN)
+        poller.register(self.audio_sub2, zmq.POLLIN)
+
         while True:
             try:
+                events = dict(poller.poll(timeout=1000))  # 1s timeout
+            except KeyboardInterrupt:
+                break
+
+            if self.audio_sub in events:
                 msg = self.audio_sub.recv_string()
-            except zmq.Again:
-                time.sleep(0.1)
-                continue
+                self.handle_message(msg)
 
-            data = json.loads(msg)
-            if 'article' in data:
-                vip_info = Redis.get('vip')
-                if vip_info is None or vip_info['status'] == 'off':
-                    name = data['name']
-                    Redis.set('name', name)
-                    self.g1_audio.greet(name)
-                    logger.info(name)
-                    Redis.set('name', "")
-
-                    article_id = data['article']
-                    self.read_article(article_id)
-                else:
-                    if 'name' in vip_info:
-                        name = vip_info['name']
-                        Redis.set('name', name)
-                        self.g1_audio.greet(name)
-                        logger.warning(name)
-
-                        article_id = data['article']
-                        self.read_article(article_id)
-                        Redis.set('name', "")
+            if self.audio_sub2 in events:
+                msg = self.audio_sub2.recv_string()
+                self.handle_message(msg)
 
 
 def main():
     agent = TTSAgent()
     agent.run()
     # agent.read_article('article_1')
+
 
 if __name__ == '__main__':
     main()

@@ -126,6 +126,7 @@ class CameraAgent:
                 left_img, name = face_rec.recognize(left_img)
                 last_rec_time = current_time
                 logger.warning(f"recognize {name}")
+
                 audio_status = Redis.get('audio_status')
                 if name is not None and audio_status == 'idle':
 
@@ -134,14 +135,18 @@ class CameraAgent:
                         if unknown_cnt < 3:
                             continue
 
-                    # do greeting
-                    params = {
-                        "name": name,
-                        "article": "article_1"
-                    }
-
-                    Redis.set('audio_status', 'busy')
-                    self.audio_pub.send_string(json.dumps(params))
+                    vip_info = Redis.get('vip')
+                    if vip_info['status'] == 'on' and vip_info['mode'] == 'manual':
+                        logger.info("Ignore all the actions")
+                    else:
+                        # do greeting
+                        params = {
+                            "name": name,
+                            "article": "article_1"
+                        }
+                        logger.info("Trigger action")
+                        Redis.set('audio_status', 'busy')
+                        self.audio_pub.send_string(json.dumps(params))
 
                     unknown_cnt = 0
 
