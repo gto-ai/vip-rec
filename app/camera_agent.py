@@ -13,13 +13,13 @@ class FaceUtil:
     def center_crop(cls, frame, ratio=0.6):
         height, width = frame.shape[:2]
 
-        crop_w = int(width * ratio)
+        crop_w = int(width * ratio / 2)
         crop_h = int(height * ratio)
 
         x1 = (width - crop_w) // 2
         y1 = (height - crop_h) // 2
         x2 = x1 + crop_w
-        y2 = y1 + crop_h
+        y2 = y1 + crop_h // 2
 
         crop = frame[y1:y2, x1:x2]
 

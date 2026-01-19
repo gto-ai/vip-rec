@@ -3,7 +3,6 @@ import re
 from deepface import DeepFace
 from pathlib import Path
 from loguru import logger
-
 from config import DATA
 
 
@@ -83,6 +82,7 @@ class FaceRec:
 
             height, width = frame.shape[:2]
             min_idx = self.get_center_face(results, height, width)
+            logger.info(f"min_idx: {min_idx} height: {height} width: {width}")
 
             df = results[min_idx]
             row = df.iloc[0]
@@ -91,6 +91,14 @@ class FaceRec:
             if row['confidence'] <= self.THRESHOLD:  # detected and face not in DB
                 name = 'UNKNOWN'
             else:  # detected and face in DB
+                x, y, w, h = int(row["source_x"]), int(row["source_y"]), int(row["source_w"]), int(row["source_h"])
+                logger.info(f"x: {x} y: {y} w: {w} h: {h}, height: {height}, width: {width}")
+                if w * h >= 0.8 * width * height:
+                    return frame, None
+
+                if w * h <= 0.1 * width * height:
+                    return frame, None
+
                 identity = Path(row['identity']).stem
 
                 name = identity

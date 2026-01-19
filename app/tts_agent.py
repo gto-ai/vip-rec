@@ -67,7 +67,7 @@ class TTSAgent:
                 Redis.set('name', "")
 
                 article_id = data['article']
-                # self.read_article(article_id)
+                self.read_article(article_id)
             else:
                 if 'name' in vip_info:
                     name = vip_info['name']
@@ -76,7 +76,7 @@ class TTSAgent:
                     logger.warning(name)
 
                     article_id = data['article']
-                    # self.read_article(article_id)
+                    self.read_article(article_id)
                     Redis.set('name', "")
 
         Redis.set('audio_status', 'idle')

@@ -17,24 +17,12 @@
       "audio": "/home/rfouyang/workspace/services/vip-rec/data/article_1/article_1_003.wav"
     },
     {
-      "action": "hands_up",
+      "action": "open_gesture",
       "audio": "/home/rfouyang/workspace/services/vip-rec/data/article_1/article_1_004.wav"
     },
     {
-      "action": "open_gesture",
-      "audio": "/home/rfouyang/workspace/services/vip-rec/data/article_1/article_1_005.wav"
-    },
-    {
-      "action": "neutral_gesture",
-      "audio": "/home/rfouyang/workspace/services/vip-rec/data/article_1/article_1_006.wav"
-    },
-    {
-      "action": "conversation_gesture",
-      "audio": "/home/rfouyang/workspace/services/vip-rec/data/article_1/article_1_007.wav"
-    },
-    {
       "action": "wave_hand",
-      "audio": "/home/rfouyang/workspace/services/vip-rec/data/article_1/article_1_008.wav"
+      "audio": "/home/rfouyang/workspace/services/vip-rec/data/article_1/article_1_005.wav"
     }
   ],
   "article_4": [
@@ -75,6 +63,44 @@
     {
       "action": "",
       "audio": "/home/rfouyang/workspace/services/vip-rec/data/article_2/article_2_003.wav"
+    }
+  ],
+  "article_5": [
+    {
+      "action": "high_five",
+      "audio": "/home/rfouyang/workspace/services/vip-rec/data/article_5/article_5_000.wav"
+    },
+    {
+      "action": "right_hand_up",
+      "audio": "/home/rfouyang/workspace/services/vip-rec/data/article_5/article_5_001.wav"
+    },
+    {
+      "action": "conversation_gesture",
+      "audio": "/home/rfouyang/workspace/services/vip-rec/data/article_5/article_5_002.wav"
+    },
+    {
+      "action": "clap",
+      "audio": "/home/rfouyang/workspace/services/vip-rec/data/article_5/article_5_003.wav"
+    },
+    {
+      "action": "hands_up",
+      "audio": "/home/rfouyang/workspace/services/vip-rec/data/article_5/article_5_004.wav"
+    },
+    {
+      "action": "open_gesture",
+      "audio": "/home/rfouyang/workspace/services/vip-rec/data/article_5/article_5_005.wav"
+    },
+    {
+      "action": "neutral_gesture",
+      "audio": "/home/rfouyang/workspace/services/vip-rec/data/article_5/article_5_006.wav"
+    },
+    {
+      "action": "conversation_gesture",
+      "audio": "/home/rfouyang/workspace/services/vip-rec/data/article_5/article_5_007.wav"
+    },
+    {
+      "action": "wave_hand",
+      "audio": "/home/rfouyang/workspace/services/vip-rec/data/article_5/article_5_008.wav"
     }
   ],
   "article_3": [
